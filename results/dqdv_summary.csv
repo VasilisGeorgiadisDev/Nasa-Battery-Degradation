@@ -1,0 +1,5 @@
+battery,peak_start_V,peak_end_V,peak_shift_mV,eis_predicted_shift_mV,peak_height_change_pct,capacity_change_pct,loss_explained_by_shift_pct
+B0005,3.492,3.416,-76,-34,-51,-29,1.1
+B0006,3.49,3.3,-190,-51,-63,-42,1.4
+B0007,3.493,3.44,-53,-73,-43,-25,0.6
+B0018,3.48,3.4,-80,5,-45,-26,0.9

@@ -1,0 +1,5 @@
+battery,number_of_tests,Re_start_mohm,Re_end_mohm,Re_increase_pct,Re_vs_capacity_r,Rct_start_mohm,Rct_end_mohm,Rct_increase_pct,Rct_vs_capacity_r,total_vs_capacity_r
+B0005,141,45.8,56.3,22.8,-0.85,74.6,81.1,8.8,-0.84,-0.87
+B0006,141,63.0,74.0,17.5,-0.95,85.3,99.8,16.9,-0.96,-0.97
+B0007,141,41.3,64.8,56.8,-0.95,77.6,90.8,17.0,-0.83,-0.92
+B0018,29,61.7,64.8,5.1,-0.75,95.0,89.6,-5.7,0.29,-0.04

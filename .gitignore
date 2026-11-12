@@ -1,0 +1,27 @@
+# Raw NASA .mat files (large, and they belong to NASA - download them yourself, see README)
+data/
+
+# Downloaded zip archives of the dataset (about 200 MB - too big for GitHub)
+*.zip
+
+# Private notes and files (not part of the public project)
+CLAUDE.md
+.claude/
+thesis/
+*Πτυχιακη*
+*πτυχιακη*
+*Thesis*
+*thesis*
+
+# Virtual environment (each person creates their own from requirements.txt)
+.venv/
+
+# Python cache files (created automatically when code runs)
+__pycache__/
+*.pyc
+
+# Editor and system files
+~$*
+.vscode/
+Thumbs.db
+desktop.ini
