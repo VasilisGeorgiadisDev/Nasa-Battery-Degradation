@@ -135,8 +135,8 @@ The raw data files are **not** included in this repository.
 **1. Get the code and install the packages** (Python 3.12, Windows commands):
 
 ```
-git clone <this repository's URL>
-cd <repository folder>
+git clone https://github.com/VasilisGeorgiadisDev/Nasa-Battery-Degradation.git
+cd Nasa-Battery-Degradation
 python -m venv .venv
 .venv\Scripts\python.exe -m pip install -r requirements.txt
 ```
