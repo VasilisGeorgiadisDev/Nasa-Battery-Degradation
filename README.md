@@ -2,8 +2,9 @@
 
 A Python tool that analyses how commercial Li-ion cells age, using the public
 **NASA Ames Li-ion Battery Aging dataset**. It measures capacity fade, finds the
-end-of-life cycle, tracks internal resistance (EIS), and uses **incremental
-capacity analysis (dQ/dV)** to test *why* the capacity is lost.
+end-of-life cycle, tracks internal resistance (EIS), uses **incremental
+capacity analysis (dQ/dV)** to test *why* the capacity is lost, and tests how well
+simple curve fits can **predict the remaining useful life (RUL)**.
 
 Results are delivered as publication-style figures and formatted Excel reports,
 all from one simple menu.
@@ -40,6 +41,9 @@ rise above the limit again.*
    than only shifting in voltage. Even if the whole curve moved down by the full
    observed shift, this would explain only **0.6–1.4%** of the capacity lost: the
    charge is really missing.
+6. **Simple fits predict the end of life well only late in life.** From cycle 80–100,
+   9 of 10 predictions are within ±20 cycles. Earlier predictions can be hundreds of
+   cycles off, because the fade rate is not constant.
 
 ---
 
@@ -50,7 +54,8 @@ rise above the limit again.*
 | ![Re and Rct vs cycle](figures/resistance_vs_cycle.png) | ![dQ/dV curves](figures/dqdv_curves.png) |
 
 More figures in [`figures/`](figures/): capacity retention, cell temperature,
-capacity vs resistance, and dQ/dV peak position and height vs cycle.
+capacity vs resistance, dQ/dV peak position and height vs cycle, and the predicted
+end of life vs the cycle when the prediction is made.
 
 ---
 
@@ -114,6 +119,47 @@ same time rise and fall together, so room temperature also affects this signal.
 
 ---
 
+## Predicting the end of life (RUL)
+
+The test: pretend we are at cycle N and only know the data up to cycle N. Fit two
+simple models, extend them into the future, and find where they cross the NASA limit
+(1.4 Ah). Then compare with the real end of life.
+
+- **Linear:** C = c₀ + s·n (the same *amount* of capacity lost every cycle)
+- **Exponential:** C = a·e<sup>b·n</sup> (the same *percentage* lost every cycle)
+
+![RUL prediction from cycle 80](figures/rul_prediction_example.png)
+
+**Error = predicted − real end-of-life cycle** (+ = too late, − = too early), linear / exponential:
+
+| Cell | Real EOL | Predicted at cycle 60 | at cycle 80 | at cycle 100 |
+|---|---|---|---|---|
+| B0005 | 125 | +92 / +114 | +20 / +30 | +5 / +11 |
+| B0006 | 109 | −6 / +3 | −16 / −11 | −10 / −7 |
+| B0007 | not reached | (predicts 219 / 244) | (158 / 171) | (150 / 160) |
+| B0018 | 97 | +10 / +18 | 0 / +4 | already past EOL |
+
+- **Late predictions are good.** From cycle 80–100 (64–92% of the life, depending on
+  the cell), 9 of 10 predictions are within ±20 cycles.
+- **Early predictions fail because the fade rate changes.** B0005 and B0007 fade
+  slowly in the first ~45 cycles (about 1.5 mAh per cycle), then about three times
+  faster, and slower again near the end. A straight line or a single exponential
+  cannot foresee this. For B0005, predictions made before cycle 45 are 92–600 cycles
+  **too late**, which is dangerously optimistic. B0018, which fades steadily at first,
+  is predicted 14–19 cycles **too early** (the safe side).
+- **All cells fade more slowly near the end.** This is why the linear model predicts
+  B0006's end of life 10–16 cycles too early.
+- **No model wins for every cell.** The exponential model always predicts a later end
+  of life than the linear one. It is better for B0006, worse for B0005 and B0018.
+- **B0007** never crosses 1.4 Ah: its lowest value is 1.4005 Ah at cycle 166. The late
+  predictions (end of life at cycle 150–162) are close, but slightly early.
+
+A better approach would update the prediction after every new cycle and give an
+uncertainty range (for example Bayesian methods such as particle filters), or use early
+warning signs such as the dQ/dV peak height or the resistance.
+
+---
+
 ## Dataset
 
 **Source:** B. Saha and K. Goebel (2007). *Battery Data Set*, NASA Prognostics Data
@@ -157,15 +203,16 @@ Inside it, open `1. BatteryAgingARC-FY08Q4.zip` and copy `B0005.mat`, `B0006.mat
   1. Capacity: capacity, retention, temperature (+ Excel)
   2. Resistance: Re and Rct vs cycle, EIS (+ Excel)
   3. dQ/dV: incremental capacity analysis (+ Excel)
-  4. Run everything (1 + 2 + 3)
-  5. Open the figures folder
-  6. Open the results folder (Excel reports)
+  4. RUL: predict the end of life (+ Excel)
+  5. Run everything (1 + 2 + 3 + 4)
+  6. Open the figures folder
+  7. Open the results folder (Excel reports)
   0. Exit
 ```
 
 Figures are saved in `figures/` (PNG, 300 dpi). Tables are saved in `results/`, as CSV
 files and as formatted Excel reports (`capacity_analysis.xlsx`,
-`resistance_analysis.xlsx`, `dqdv_analysis.xlsx`).
+`resistance_analysis.xlsx`, `dqdv_analysis.xlsx`, `rul_analysis.xlsx`).
 
 ---
 
@@ -177,6 +224,7 @@ files and as formatted Excel reports (`capacity_analysis.xlsx`,
 │   ├── load_data.py   reads the .mat files into pandas tables
 │   ├── analysis.py    capacity retention, end of life, resistance trends
 │   ├── dqdv.py        incremental capacity analysis (dQ/dV)
+│   ├── rul.py         end-of-life prediction (linear and exponential fits)
 │   ├── plots.py       all figures, one consistent style
 │   ├── excel_report.py formatted Excel reports
 │   └── main.py        the numbered menu

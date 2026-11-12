@@ -312,3 +312,42 @@ def write_dqdv_report(summary, peak_tables, curve_tables, figure_paths, excel_pa
     write_battery_blocks(formats, "dQdV curves", curve_tables, curve_columns)
 
     save_workbook(workbook, excel_path)
+
+
+# =============================================================================
+# Report 4: remaining useful life (RUL)
+# =============================================================================
+
+def write_rul_report(summary, sweeps, figure_paths, excel_path):
+    """summary from rul.make_rul_summary, sweeps from rul.make_prediction_sweep"""
+    workbook = xlsxwriter.Workbook(excel_path)
+    formats = make_formats(workbook)
+
+    def model_columns(model):
+        return [
+            ("battery",          "Battery",                      None),
+            ("prediction_cycle", "Prediction made at cycle",     "0"),
+            ("actual_eol",       "Real EOL cycle",               "0"),
+            (f"{model}_eol",     "Predicted EOL cycle",          "0"),
+            (f"{model}_rul",     "Predicted RUL (cycles left)",  "0"),
+            (f"{model}_error",   "Error (cycles)\n+ late, − early", "0"),
+        ]
+
+    write_summary_sheet(
+        formats, "NASA Li-ion battery ageing: remaining useful life (RUL)",
+        figure_paths, 0.55,
+        [("Table 1. Linear model: C = c0 + s·n", summary, model_columns("linear")),
+         ("Table 2. Exponential model: C = a·exp(b·n)", summary,
+          model_columns("exponential"))],
+        ["End of life = first cycle below 1.4 Ah (NASA). Each prediction uses only the "
+         "cycles up to 'Prediction made at cycle'. B0007 never reaches 1.4 Ah in the data.",
+         "Early predictions can be far off: B0005 and B0007 fade slowly at first and "
+         "faster later, which a single straight line or exponential cannot foresee."])
+
+    write_battery_blocks(formats, "Predictions", sweeps, [
+        ("prediction_cycle", "Prediction made at cycle",        10, "0"),
+        ("linear_eol",       "Predicted EOL, linear (cycle)",   12, "0"),
+        ("exponential_eol",  "Predicted EOL, exponential (cycle)", 13, "0"),
+        ("actual_eol",       "Real EOL (cycle)",                10, "0"),
+    ], empty_text="Not reached")
+    save_workbook(workbook, excel_path)

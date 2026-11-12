@@ -11,14 +11,16 @@ import os
 
 from analysis import run_capacity_analysis, run_resistance_analysis, RESULTS_FOLDER
 from dqdv import run_dqdv_analysis
+from rul import run_rul_analysis
 from plots import FIGURES_FOLDER
 
 
 def run_everything():
-    """Options 1, 2 and 3 one after the other."""
+    """Options 1 to 4 one after the other."""
     run_capacity_analysis()
     run_resistance_analysis()
     run_dqdv_analysis()
+    run_rul_analysis()
 
 
 def open_in_windows(path):
@@ -36,9 +38,10 @@ MENU = [
     ("1", "Capacity: capacity, retention, temperature (+ Excel)", run_capacity_analysis),
     ("2", "Resistance: Re and Rct vs cycle, EIS (+ Excel)",       run_resistance_analysis),
     ("3", "dQ/dV: incremental capacity analysis (+ Excel)",       run_dqdv_analysis),
-    ("4", "Run everything (1 + 2 + 3)",                               run_everything),
-    ("5", "Open the figures folder",          lambda: open_in_windows(FIGURES_FOLDER)),
-    ("6", "Open the results folder (Excel reports)",
+    ("4", "RUL: predict the end of life (+ Excel)",               run_rul_analysis),
+    ("5", "Run everything (1 + 2 + 3 + 4)",                       run_everything),
+    ("6", "Open the figures folder",          lambda: open_in_windows(FIGURES_FOLDER)),
+    ("7", "Open the results folder (Excel reports)",
           lambda: open_in_windows(RESULTS_FOLDER)),
 ]
 

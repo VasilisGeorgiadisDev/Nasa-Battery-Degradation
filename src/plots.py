@@ -317,6 +317,95 @@ def plot_dqdv_peak_vs_cycle(peak_tables):
     return fig
 
 
+def plot_rul_example(discharge_tables, prediction_cycle, limit_Ah=1.4):
+    """Milestone 9 example: 'we are at cycle N'. One panel per battery:
+    known data (battery colour), future data (light grey), linear and exponential
+    fits extended into the future, and the real end of life (black dot)."""
+    import numpy as np
+    from rul import predict_from, linear_curve, exponential_curve
+    from analysis import first_cycle_below
+
+    apply_thesis_style()
+    fig, axes = plt.subplots(2, 2, figsize=(12, 9.5))
+    future_n = np.arange(0, 201)
+
+    for ax, label, (name, table) in zip(axes.flat, ["(a)", "(b)", "(c)", "(d)"],
+                                        discharge_tables.items()):
+        known = table[table["discharge_number"] <= prediction_cycle]
+        future = table[table["discharge_number"] > prediction_cycle]
+        p = predict_from(table, prediction_cycle, limit_Ah)
+
+        ax.plot(future["discharge_number"], future["capacity_Ah"], color="#C8C8C8",
+                label="Future (unknown)")
+        ax.plot(known["discharge_number"], known["capacity_Ah"],
+                color=BATTERY_COLORS[name], label="Known data")
+        ax.plot(future_n, linear_curve(p["linear_params"], future_n),
+                color="black", linestyle="--", linewidth=1.8, label="Linear fit")
+        ax.plot(future_n, exponential_curve(p["exponential_params"], future_n),
+                color=THESIS_COLORS["purple"], linestyle="--", linewidth=1.8,
+                label="Exponential fit")
+        ax.axhline(limit_Ah, color="black", linewidth=1)
+        ax.axvline(prediction_cycle, color="black", linestyle=":", linewidth=1.5)
+
+        actual = first_cycle_below(table, limit_Ah)
+        if actual is not None:
+            ax.plot(actual, limit_Ah, "o", color="black", markersize=9, label="Real EOL")
+
+        ax.set_xlabel("Cycle number")
+        ax.set_ylabel("Capacity (Ah)")
+        ax.set_xlim(0, 200)
+        ax.set_ylim(1.1, 2.1)
+        ax.set_xticks(range(0, 201, 50))
+        ax.yaxis.set_major_formatter("{x:.1f}")
+        ax.text(0.97, 0.95, name, transform=ax.transAxes, ha="right", va="top",
+                fontsize=15)
+        add_panel_label(ax, label)
+
+    handles, labels = axes.flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.95),
+               ncol=5, frameon=False, handlelength=2.2, columnspacing=1.4)
+    fig.text(0.5, 0.925, f"Prediction made at cycle {prediction_cycle} "
+             f"(dotted line); end of life = {limit_Ah} Ah", ha="center", fontsize=13)
+    fig.subplots_adjust(wspace=0.3, hspace=0.45, top=0.86)
+    return fig
+
+
+def plot_rul_sweep(sweeps):
+    """Milestone 9: predicted EOL cycle vs the cycle when the prediction is made.
+    (a) linear model, (b) exponential model. Dashed lines = real EOL."""
+    apply_thesis_style()
+    fig, (ax_lin, ax_exp) = plt.subplots(1, 2, figsize=(13, 5))
+
+    for name, sweep in sweeps.items():
+        colour = BATTERY_COLORS[name]
+        for ax, column in [(ax_lin, "linear_eol"), (ax_exp, "exponential_eol")]:
+            ax.plot(sweep["prediction_cycle"], sweep[column], color=colour, label=name)
+            actual = sweep["actual_eol"].iloc[0]
+            if pd_notna(actual):
+                ax.axhline(actual, color=colour, linestyle="--", linewidth=1.5)
+
+    for ax, label, title in [(ax_lin, "(a)", "Linear"), (ax_exp, "(b)", "Exponential")]:
+        ax.set_xlabel("Prediction made at cycle")
+        ax.set_ylabel("Predicted EOL cycle")
+        ax.set_xlim(0, 175)
+        ax.set_ylim(0, 300)
+        ax.text(0.97, 0.95, title, transform=ax.transAxes, ha="right", va="top",
+                fontsize=15)
+        add_panel_label(ax, label)
+
+    handles, labels = ax_lin.get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", bbox_to_anchor=(0.5, 0.93),
+               ncol=4, frameon=False, handlelength=2.2, columnspacing=1.6)
+    fig.subplots_adjust(wspace=0.3, top=0.85)
+    return fig
+
+
+def pd_notna(value):
+    """True if value is a real number (not None / NaN)."""
+    import pandas as pd
+    return value is not None and not pd.isna(value)
+
+
 # Run this file directly to make the Milestone 3 figure:
 #     .venv\Scripts\python.exe src\plots.py
 if __name__ == "__main__":
