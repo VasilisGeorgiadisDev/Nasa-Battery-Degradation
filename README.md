@@ -203,7 +203,7 @@ why?*) to commercial Li-ion cells, using public data.
 The plot style follows the figures of my thesis.
 
 **Built with AI assistance:** I guided this project and used Claude Code (Anthropic) as
-my assistant. Under my guidance, it wrote the code and helped me write this README. I
+my assistant. Under my guidance, it wrote the code and I
 chose the questions to study, decided the analysis steps and the output format, and
 checked every result and the physics interpretation against my electrochemistry
 background. I used the project to learn to read and edit Python.
