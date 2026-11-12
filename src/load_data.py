@@ -35,6 +35,12 @@ def load_battery(name):
     Python dictionaries, which are much easier to read.
     """
     file_path = DATA_FOLDER / f"{name}.mat"
+    if not file_path.exists():
+        # A clear message instead of scipy's confusing one
+        raise FileNotFoundError(
+            f"Data file not found: {file_path}\n"
+            "Download the NASA data and put the .mat files in the 'data' folder "
+            "(see README.md, 'How to run it', step 2).")
     mat = scipy.io.loadmat(file_path, simplify_cells=True)
     return mat[name]["cycle"]   # a Python list; each item is one cycle
 

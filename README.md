@@ -190,8 +190,9 @@ python -m venv .venv
 **2. Download the data.**
 Download `5. Battery Data Set` from the
 [NASA PCoE repository](https://www.nasa.gov/intelligent-systems-division/discovery-and-systems-health/pcoe/pcoe-data-set-repository/).
-Inside it, open `1. BatteryAgingARC-FY08Q4.zip` and copy `B0005.mat`, `B0006.mat`,
-`B0007.mat`, `B0018.mat` (and `README.txt`) into the `data/` folder.
+Inside it, open `1. BatteryAgingARC-FY08Q4.zip`. In the project folder, create a new
+folder called `data`, and copy `B0005.mat`, `B0006.mat`, `B0007.mat`, `B0018.mat`
+(and `README.txt`) into it.
 
 **3. Start the menu:**
 
