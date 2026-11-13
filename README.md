@@ -1,5 +1,11 @@
 # NASA Battery Degradation Analyser
 
+I am a physics graduate (University of Patras, Greece) interested in battery and energy storage R&D.
+
+My BSc thesis studied lithium titanate (Li₄Ti₅O₁₂) thin films as the electrochromic layer of smart windows, characterised with cyclic voltammetry and galvanostatic charge–discharge. An electrochromic device works like a thin-film battery: ions and electrons are inserted to colour it, and the stored charge fades with cycling. This project applies the same questions (how fast is charge lost, and why?) to commercial Li-ion cells, using public data.
+
+The plot style follows the figures of my thesis.
+
 A Python tool that analyses how commercial Li-ion cells age, using the public
 **NASA Ames Li-ion Battery Aging dataset**. It measures capacity fade, finds the
 end-of-life cycle, tracks internal resistance (EIS), uses **incremental
